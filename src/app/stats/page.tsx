@@ -40,6 +40,9 @@ export default function Stats() {
       [
         { name: "GRE", ws: words.filter((w) => w.lists.includes("gre")) },
         { name: "TOEFL", ws: words.filter((w) => w.lists.includes("toefl")) },
+        { name: "Magoosh · Common", ws: words.filter((w) => w.magoosh === "common") },
+        { name: "Magoosh · Basic", ws: words.filter((w) => w.magoosh === "basic") },
+        { name: "Magoosh · Advanced", ws: words.filter((w) => w.magoosh === "advanced") },
         { name: "My words", ws: words.filter((w) => w.custom) },
       ].filter((l) => l.ws.length),
     [words],

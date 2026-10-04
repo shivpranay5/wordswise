@@ -14,6 +14,8 @@ export interface Word {
   difficulty: number;
   theme: string;
   lists: ListId[];
+  /** tier in the Magoosh 1000 list, if the word is on it */
+  magoosh?: "common" | "basic" | "advanced";
   custom?: boolean;
 }
 
@@ -47,6 +49,8 @@ export interface Settings {
   examDate: string; // YYYY-MM-DD or ""
   language: string; // "" | "te" | "hi" ...
   accessCode: string;
+  /** introduce Magoosh words first: Common → Basic → Advanced */
+  magooshFirst: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -57,7 +61,10 @@ export const DEFAULT_SETTINGS: Settings = {
   examDate: "",
   language: "",
   accessCode: "",
+  magooshFirst: true,
 };
+
+export const MAGOOSH_TIERS = ["common", "basic", "advanced"] as const;
 
 export type Status = "new" | "learning" | "familiar" | "mastered";
 

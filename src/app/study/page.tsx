@@ -16,7 +16,7 @@ const GRADES: { g: Grade; label: string; cls: string }[] = [
 ];
 
 export default function Study() {
-  const { dueWords, newWordsToday, activeWords, progress, byId, review } = useApp();
+  const { dueWords, newWordsToday, progress, byId, review } = useApp();
   const [queue, setQueue] = useState<string[]>(() => {
     const due = dueWords().map((w) => w.id);
     const fresh = newWordsToday().map((w) => w.id);
@@ -74,11 +74,7 @@ export default function Study() {
   }, [current, revealed]);
 
   function studyMore() {
-    const extra = activeWords
-      .filter((w) => !progress[w.id])
-      .sort((a, b) => a.difficulty - b.difficulty || a.theme.localeCompare(b.theme))
-      .slice(0, 10)
-      .map((w) => w.id);
+    const extra = newWordsToday(10).map((w) => w.id);
     setQueue(extra);
     setTotal(extra.length);
     setDone(0);
@@ -123,7 +119,10 @@ export default function Study() {
         onClick={() => setRevealed(true)}
       >
         <div className="flex items-center justify-between text-xs text-muted">
-          <span>{current.lists.map((l) => l.toUpperCase()).join(" · ")}</span>
+          <span>
+            {current.lists.map((l) => l.toUpperCase()).join(" · ")}
+            {current.magoosh && <span className="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-accent">Magoosh {current.magoosh}</span>}
+          </span>
           {!p && <span className="rounded-full bg-accent px-2 py-0.5 font-semibold text-white">NEW</span>}
         </div>
         <div className="mt-8 text-center">

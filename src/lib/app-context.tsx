@@ -34,7 +34,8 @@ interface AppState {
   resetProgress: () => Promise<void>;
   signOut: () => Promise<void>;
   dueWords: () => Word[];
-  newWordsToday: () => Word[];
+  /** next new words in study order; with a limit, ignores the daily goal */
+  newWordsToday: (limit?: number) => Word[];
   practicePool: (n: number) => Word[];
   api: <T>(path: string, body: unknown) => Promise<T>;
 }
@@ -256,24 +257,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       .map((p) => byId[p.wordId]);
   }, [progress, byId]);
 
-  const newWordsToday = useCallback(() => {
-    const learnedToday = logs[dayKey()]?.newLearned ?? 0;
-    const remaining = Math.max(0, settings.dailyNew - learnedToday);
-    if (!remaining) return [];
-    // custom words first, then by theme so related words are learned together, easier first
-    const fresh = activeWords.filter((w) => !progress[w.id]);
-    const customFirst = fresh.filter((w) => w.custom);
-    const rest = fresh
-      .filter((w) => !w.custom)
-      .sort((a, b) => a.difficulty - b.difficulty || a.theme.localeCompare(b.theme) || a.word.localeCompare(b.word));
-    // take a theme block: pick the theme of the first easiest word and fill from it, then continue
-    const ordered: Word[] = [...customFirst];
-    if (rest.length) {
-      const theme = rest[0].theme;
-      ordered.push(...rest.filter((w) => w.theme === theme), ...rest.filter((w) => w.theme !== theme));
-    }
-    return ordered.slice(0, remaining);
-  }, [activeWords, progress, logs, settings.dailyNew]);
+  const newWordsToday = useCallback(
+    (limit?: number) => {
+      const learnedToday = logs[dayKey()]?.newLearned ?? 0;
+      const remaining = limit ?? Math.max(0, settings.dailyNew - learnedToday);
+      if (!remaining) return [];
+      const TIER: Record<string, number> = { common: 0, basic: 1, advanced: 2 };
+      const rank = (w: Word) => (settings.magooshFirst && w.magoosh ? TIER[w.magoosh] : settings.magooshFirst ? 3 : 0);
+      const fresh = activeWords.filter((w) => !progress[w.id]);
+      // her own words first
+      const ordered: Word[] = fresh.filter((w) => w.custom);
+      let rest = fresh
+        .filter((w) => !w.custom)
+        .sort((a, b) => rank(a) - rank(b) || a.difficulty - b.difficulty || a.theme.localeCompare(b.theme) || a.word.localeCompare(b.word));
+      // learn related words together: take theme blocks from the current tier
+      while (ordered.length < remaining && rest.length) {
+        const first = rest[0];
+        const block = rest.filter((w) => rank(w) === rank(first) && w.theme === first.theme);
+        ordered.push(...block);
+        const ids = new Set(block.map((w) => w.id));
+        rest = rest.filter((w) => !ids.has(w.id));
+      }
+      return ordered.slice(0, remaining);
+    },
+    [activeWords, progress, logs, settings.dailyNew, settings.magooshFirst],
+  );
 
   const practicePool = useCallback(
     (n: number) => {

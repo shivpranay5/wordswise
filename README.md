@@ -2,7 +2,7 @@
 
 A daily vocabulary app: spaced-repetition flashcards, 5 games, an AI tutor, speaking practice, mock GRE questions, and progress tracking. Installs on a phone like an app.
 
-**1,054 words included** (775 GRE + 290 TOEFL, some on both), each with a definition, 2 examples, a fill-in-the-blank sentence, synonyms and antonyms, a memory tip and a theme.
+**1,642 words included**: 1,371 GRE (covering all 999 words of the Magoosh 1000 list, tagged Common / Basic / Advanced) + 290 TOEFL, some on both. Each has a definition, 2 examples, a fill-in-the-blank sentence, synonyms and antonyms, a memory tip and a theme.
 
 ## What's inside
 
@@ -12,7 +12,8 @@ A daily vocabulary app: spaced-repetition flashcards, 5 games, an AI tutor, spea
 | Multiple choice, Fill-in-the-blank, Synonym match, Spelling scramble, 60s Speed round | `/play/*` | — |
 | Word browser: search, filter by list/status/theme, pronunciation, "tricky words" | `/words` | — |
 | Progress: streak, study calendar, mastery per list, 7-day review forecast | `/stats` | — |
-| Exam countdown, daily goal, list choice | `/settings` | — |
+| Exam countdown, daily goal, list choice, **Magoosh 1000 first** (Common → Basic → Advanced) | `/settings` | — |
+| Magoosh filters in Words, Magoosh mastery bars in Progress | `/words`, `/stats` | — |
 | Login + sync across devices | — | Supabase |
 | AI tutor ("ask anything about this word"), custom words filled in automatically | word sheet / Add word | Anthropic |
 | "Use it in a sentence", graded by AI | `/sentence` | Anthropic |
@@ -80,3 +81,7 @@ src/app/api/*            AI, translation, speech-token routes
 public/data/words.json   the word list
 supabase/schema.sql      database tables + row-level security
 ```
+
+## About the word content
+
+All definitions, examples, fill-in-the-blank sentences and memory tips are original and written by AI. Only the *list* of Magoosh words was taken from Magoosh's free PDF, to tag which words are on it. No Magoosh definitions or sentences were copied.

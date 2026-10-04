@@ -46,6 +46,15 @@ export default function SettingsPage() {
             ))}
           </div>
         </Row>
+        <Row label="Magoosh 1000 first" hint="New words come from Magoosh Common → Basic → Advanced before other words">
+          <button
+            type="button"
+            onClick={() => updateSettings({ magooshFirst: !settings.magooshFirst })}
+            className={`btn w-full border text-sm ${settings.magooshFirst ? "border-accent bg-accent-soft text-accent" : "border-line"}`}
+          >
+            {settings.magooshFirst ? "On" : "Off"}
+          </button>
+        </Row>
         <Row label="New words per day" hint="15–20 is a good pace; reviews add up over time">
           <div className="flex items-center gap-3">
             <input

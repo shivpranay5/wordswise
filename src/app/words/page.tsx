@@ -21,7 +21,13 @@ export default function Words() {
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return words
-      .filter((w) => list === "all" || (list === "mine" ? w.custom : w.lists.includes(list as "gre")))
+      .filter((w) => {
+        if (list === "all") return true;
+        if (list === "mine") return w.custom;
+        if (list === "magoosh") return !!w.magoosh;
+        if (list.startsWith("mg-")) return w.magoosh === list.slice(3);
+        return w.lists.includes(list as "gre");
+      })
       .filter((w) => theme === "all" || w.theme === theme)
       .filter((w) => {
         if (status === "all") return true;
@@ -42,7 +48,10 @@ export default function Words() {
       <input className="input" placeholder="Search words, meanings, synonyms…" value={q} onChange={(e) => { setQ(e.target.value); setLimit(60); }} />
       <div className="grid grid-cols-3 gap-2">
         <select className={sel} value={list} onChange={(e) => setList(e.target.value)}>
-          <option value="all">All lists</option><option value="gre">GRE</option><option value="toefl">TOEFL</option><option value="mine">My words</option>
+          <option value="all">All lists</option><option value="gre">GRE</option><option value="toefl">TOEFL</option>
+          <option value="magoosh">Magoosh 1000</option><option value="mg-common">· Magoosh Common</option>
+          <option value="mg-basic">· Magoosh Basic</option><option value="mg-advanced">· Magoosh Advanced</option>
+          <option value="mine">My words</option>
         </select>
         <select className={sel} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="all">Any status</option><option value="new">New</option><option value="learning">Learning</option>
@@ -59,7 +68,10 @@ export default function Words() {
           <li key={w.id}>
             <button className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-accent-soft/40" onClick={() => setOpen(w)}>
               <div className="min-w-0 flex-1">
-                <div className="font-serif text-lg font-semibold">{w.word} <span className="font-sans text-xs font-normal italic text-muted">{w.pos}</span></div>
+                <div className="font-serif text-lg font-semibold">
+                  {w.word} <span className="font-sans text-xs font-normal italic text-muted">{w.pos}</span>
+                  {w.magoosh && <span className="ml-1.5 font-sans text-[10px] font-semibold uppercase tracking-wide text-accent">M·{w.magoosh}</span>}
+                </div>
                 <div className="truncate text-sm text-muted">{w.definition}</div>
               </div>
               <StatusPill status={statusOf(progress[w.id])} />
