@@ -103,6 +103,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const userId = session?.user.id ?? null;
+  // Name entered on the sign-up form
+  const signupName = String(session?.user.user_metadata?.name ?? "").trim();
 
   // Load user data
   useEffect(() => {
@@ -127,7 +129,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setProgress(snap.progress);
         setLogs(snap.logs);
         setCustom(snap.custom);
-        setSettings({ ...DEFAULT_SETTINGS, ...(snap.settings ?? {}) });
+        const loadedSettings = { ...DEFAULT_SETTINGS, ...(snap.settings ?? {}) };
+        if (!loadedSettings.name && signupName) {
+          loadedSettings.name = signupName;
+          store.saveSettings(loadedSettings).catch(() => {});
+        }
+        setSettings(loadedSettings);
         setLoaded(true);
       })
       .catch((e) => {
@@ -137,7 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [authChecked, userId]);
+  }, [authChecked, userId, signupName]);
 
   const persist = useCallback((fn: (s: Store) => Promise<void>) => {
     const s = storeRef.current;

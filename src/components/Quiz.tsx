@@ -19,7 +19,7 @@ export default function Quiz({
   seconds?: number; // timed mode: endless questions until time is up
   bestKey?: string;
 }) {
-  const { practicePool, activeWords, practice } = useApp();
+  const { practicePool, activeWords, practice, settings } = useApp();
   const [round, setRound] = useState(0);
   const [questions, setQuestions] = useState<Question[]>(() => practicePool(seconds ? 80 : count).map((w) => make(w, activeWords)));
   const [i, setI] = useState(0);
@@ -90,6 +90,11 @@ export default function Quiz({
           <div className="text-2xl font-semibold">
             {score} / {total}
           </div>
+          {settings.name && (
+            <div className="text-sm text-muted">
+              {score / Math.max(1, total) >= 0.8 ? "Excellent work" : score / Math.max(1, total) >= 0.5 ? "Nice going" : "Keep practising"}, {settings.name}!
+            </div>
+          )}
           {bestKey && <div className="text-sm text-muted">{score > best ? "New best score!" : `Best: ${best}`}</div>}
           <div className="flex justify-center gap-2 pt-2">
             <button className="btn btn-primary" onClick={restart}>
@@ -158,14 +163,19 @@ export default function Quiz({
 
       <div className="grid gap-2">
         {q.options.map((o, k) => {
-          const state = picked === null ? "" : k === q.answer ? "border-good bg-good/10" : k === picked ? "border-bad bg-bad/10 shake" : "opacity-60";
+          const isAnswer = picked !== null && k === q.answer;
+          const isWrongPick = picked !== null && k === picked && k !== q.answer;
+          const state = picked === null ? "hover:border-accent" : isAnswer ? "border-good bg-good/15 text-good" : isWrongPick ? "border-bad bg-bad/15 text-bad shake" : "opacity-50";
           return (
             <button
               key={k}
               onClick={() => choose(k)}
-              className={`card px-4 py-3 text-left text-[15px] transition hover:border-accent ${state}`}
+              disabled={picked !== null}
+              className={`card flex items-center gap-3 border-2 px-4 py-3 text-left text-[15px] transition ${state}`}
             >
-              {o}
+              <span className="flex-1">{o}</span>
+              {isAnswer && <span className="shrink-0 text-xs font-semibold">✓ Correct</span>}
+              {isWrongPick && <span className="shrink-0 text-xs font-semibold">✗ Your answer</span>}
             </button>
           );
         })}

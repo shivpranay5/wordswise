@@ -5,6 +5,7 @@ import { getSupabase } from "@/lib/supabase";
 
 export default function Login() {
   const [mode, setMode] = useState<"in" | "up">("in");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -19,7 +20,7 @@ export default function Login() {
     const res =
       mode === "in"
         ? await sb.auth.signInWithPassword({ email, password })
-        : await sb.auth.signUp({ email, password });
+        : await sb.auth.signUp({ email, password, options: { data: { name: name.trim() } } });
     setBusy(false);
     if (res.error) setMsg(res.error.message);
     else if (mode === "up" && !res.data.session) setMsg("Check your email to confirm your account, then sign in.");
@@ -34,6 +35,9 @@ export default function Login() {
           </h1>
           <p className="mt-1 text-sm text-muted">A few words every day, until test day.</p>
         </div>
+        {mode === "up" && (
+          <input className="input" required maxLength={40} autoComplete="given-name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
+        )}
         <input className="input" type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input
           className="input"

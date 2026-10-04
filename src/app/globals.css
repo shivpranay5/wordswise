@@ -50,47 +50,50 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-}
+/* In the components layer so utilities like border-good / bg-bad/10 can override them. */
+@layer components {
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+  }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  border-radius: 0.75rem;
-  padding: 0.65rem 1rem;
-  font-weight: 600;
-  transition: transform 0.05s, opacity 0.15s;
-}
-.btn:active {
-  transform: scale(0.98);
-}
-.btn:disabled {
-  opacity: 0.5;
-}
-.btn-primary {
-  background: var(--accent);
-  color: white;
-}
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--line);
-}
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 0.75rem;
+    padding: 0.65rem 1rem;
+    font-weight: 600;
+    transition: transform 0.05s, opacity 0.15s;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+  }
 
-.input {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: var(--card);
-  border-radius: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  outline: none;
-}
-.input:focus {
-  border-color: var(--accent);
+  .input {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    outline: none;
+  }
+  .input:focus {
+    border-color: var(--accent);
+  }
 }
 
 .flip {
